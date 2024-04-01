@@ -2,28 +2,33 @@
 
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
-const int SIZE = 16;
+const byte SIZE = 16;
 
-const int ballSize = 3;
-int ballPositionX = 64;
-int ballPositionY = 48;
-int ballSpeedX = 2;
-int ballSpeedY = -2;
+const byte ballSize = 3;
+byte ballPositionX = 64;
+byte ballPositionY = 48;
+byte ballSpeedX = 2;
+byte ballSpeedY = -2;
 
-const int paddleHeight = 3;
-const int paddleWidth = 20;
-int paddleX = 59;
-int paddleY = 54;
+const byte paddleHeight = 3;
+const byte paddleWidth = 20;
+byte paddleX = 59;
+byte paddleY = 54;
 
-const int led1 = 11;
-const int led2 = 12;
-const int led3 = 13;
+const byte led1 = 11;
+const byte led2 = 12;
+const byte led3 = 13;
+
+byte total = 1;
+byte generalTotal = 1;
+byte livesNumber = 3;
+byte activeLevel = 1;
 
 struct Box {
-  int x;
-  int y;
-  int width;
-  int height;
+  byte x;
+  byte y;
+  byte width;
+  byte height;
 };
 
 Box level1[] = {
@@ -119,7 +124,6 @@ Box level5[] = {
   {92, 17, 16, 3},
   {2, 22, 16, 3},
   {110, 22, 16, 3},
-
 };
 
 void zero() {
@@ -255,14 +259,12 @@ void ledKapat(int led){
 // program ilk çalıştığında ekrana top çizer
 void drawBall() {
   u8g2.clearBuffer(); // Önceki çizimleri temizle
-  //u8g2.setDrawColor(1); // Çizim rengini sarı olarak ayarla
   u8g2.drawBox(ballPositionX, ballPositionY, ballSize, ballSize); // Topu çiz
   u8g2.sendBuffer(); // Çizimi ekrana gönder
 }
 
-int total = 1;
-int livesNumber = 3;
-void updateBall() {
+
+void updateBall(Box level[]) {
   u8g2.clearBuffer();
   u8g2.drawBox(ballPositionX, ballPositionY, ballSize, ballSize); // Topu çiz
   u8g2.sendBuffer();
@@ -307,11 +309,11 @@ void updateBall() {
 
   // Topun bloğa çarpması kontrolü
   for (int i = 0; i < SIZE; i++) {
-    if (ballPositionX + ballSize >= level1[i].x && ballPositionX <= level1[i].x + level1[i].width &&
-        ballPositionY + ballSize >= level1[i].y && ballPositionY <= level1[i].y + level1[i].height) {
+    if (ballPositionX + ballSize >= level[i].x && ballPositionX <= level[i].x + level[i].width &&
+        ballPositionY + ballSize >= level[i].y && ballPositionY <= level[i].y + level[i].height) {
       // Top bloğa çarptığı anda bloğu ekrandan dışarı al ve topu ters çevir
-      level1[i].x = -100; // Bloğun x koordinatını ekrandan dışına al
-      level1[i].y = -100; // Bloğun y koordinatını ekrandan dışına al
+      level[i].x = -100; // Bloğun x koordinatını ekrandan dışına al
+      level[i].y = -100; // Bloğun y koordinatını ekrandan dışına al
       ballSpeedY = -ballSpeedY; // Yönü tersine çevir
       if(total < 10){
           displayNumber(total);
@@ -320,6 +322,17 @@ void updateBall() {
         one();
       }
       total = total + 1;
+      // terminale genel toplamı yazar ve günceller
+      generalTotal = generalTotal + 1;
+      if(generalTotal == 6){ 
+      // bir dahaki levele geçmeden önce 5 saniye bekle
+      delay(5000);
+      // level 2 ye geçmek için
+      activeLevel = activeLevel + 1;
+      ballPositionX = 64; // Topu başlangıç pozisyonuna geri döndür
+      ballPositionY = 48; // Topu başlangıç pozisyonuna geri döndür
+      ballSpeedY = -ballSpeedY; // Yönü tersine çevir
+      }
     }
   }
 }
@@ -374,6 +387,7 @@ void drawPaddle(){
 // program ilk çalışmaya başladığında bu çalışır
 void setup() {
   u8g2.begin();
+  Serial.begin(9600);
   pinMode(2,OUTPUT);
   pinMode(3,OUTPUT);
   pinMode(4,OUTPUT);
@@ -396,12 +410,22 @@ void setup() {
 
 // program başladığında setup() methodundan sonra çalışmaya başlar ve sürekli çalışır
 void loop() {
-  updateBall();
   drawPaddle();
-  drawLevel(level1);
+  if(activeLevel == 1){
+      drawLevel(level1);
+      updateBall(level1);
+  }else if(activeLevel == 2){
+      drawLevel(level4);
+      updateBall(level4);
+  }else if(activeLevel == 3){
+      updateBall(level5);
+      drawLevel(level5);
+  }else if(activeLevel == 4){
+      updateBall(level4);
+      drawLevel(level4);
+  }else if(activeLevel == 5){
+      updateBall(level5);
+      drawLevel(level5);
+  }
   delay(20); // Topun hareket hızını ayarlar
 }
-
-
-
-
