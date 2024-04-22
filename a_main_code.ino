@@ -11,121 +11,148 @@ byte ballSpeedX = 2;
 byte ballSpeedY = -2;
 
 const byte paddleHeight = 3;
-const byte paddleWidth = 20;
-byte paddleX = 59;
-byte paddleY = 54;
+const byte paddleWidth = 24;
+int paddleX = 64;
+int paddleY = 60;
 
+//ledlerin bağlandığı pinler
 const byte led1 = 11;
 const byte led2 = 12;
 const byte led3 = 13;
 
 byte total = 1;
-byte generalTotal = 1;
+byte levelTotal = 1;
 byte livesNumber = 3;
+byte segmentTotal= 1;
 byte activeLevel = 1;
+
+byte buttonSelect = 22;
+byte buttonUp = 23;
+byte buttonDown = 24;
+
+byte menuOption = 0;
+
 
 struct Box {
   byte x;
   byte y;
-  byte width;
-  byte height;
+  uint8_t width;
+  uint8_t height;
+  bool active; 
 };
 
+
+// düşen itemın tanımlanması
+struct Item {
+  byte x;
+  byte y;
+  byte size;
+  byte speed;
+  bool active;
+};
+
+Item item = {0, 0, 0, 0, false};
+
+
+//bütün bölümler ve bölüm tasarımları
 Box level1[] = {
-  {2, 2, 16, 3},
-  {20, 2, 16, 3},
-  {38, 2, 16, 3},
-  {56, 2, 16, 3},
-  {74, 2, 16, 3},
-  {92, 2, 16, 3},
-  {110, 2, 16, 3},
-  {20, 7, 16, 3},
-  {38, 7, 16, 3},
-  {56, 7, 16, 3},
-  {74, 7, 16, 3},
-  {92, 7, 16, 3},
-  {38, 12, 16, 3},
-  {56, 12, 16, 3},
-  {74, 12, 16, 3},
-  {56, 17, 16, 3},
+  { 56, 2, 16, 2, true },
+  { 20, 6, 16, 2, true },
+  { 38, 6, 16, 2, true },
+  { 56, 6, 16, 2, true },
+  { 74, 6, 16, 2, true },
+  { 92, 6, 16, 2, true },
+  {2, 10, 16, 2, true },
+  { 20, 10, 16, 2, true },
+  { 38, 10, 16, 2, true },
+  { 56, 10, 16, 2, true },
+  { 74, 10, 16, 2, true },
+  { 92, 10, 16, 2, true },
+  { 110, 10, 16, 2, true },
+  { 56, 14, 16, 2, true },
+  { 56, 18, 16, 2, true },
+  { 56, 22, 16, 2, true},  
 };
 
 Box level2[] = {
-  {56, 2, 16, 3},
-  {38, 7, 16, 3},
-  {56, 7, 16, 3},
-  {74, 7, 16, 3},
-  {20, 12, 16, 3},
-  {38, 12, 16, 3},
-  {56, 12, 16, 3},
-  {74, 12, 16, 3},
-  {92, 12, 16, 3},
-  {2, 17, 16, 3},
-  {20, 17, 16, 3},
-  {38, 17, 16, 3},
-  {56, 17, 16, 3},
-  {74, 17, 16, 3},
-  {92, 17, 16, 3},
-  {110, 17, 16, 3},
+  { 20, 4, 16, 2, true },
+  { 38, 4, 16, 2, true },
+  { 56, 4, 16, 2, true },
+  { 74, 4, 16, 2, true },
+  { 92, 4, 16, 2, true },
+  { 20, 8, 16, 2, true },
+  { 20, 12, 16, 2, true },
+  { 20, 16, 16, 2, true },
+  { 92, 8, 16, 2, true },
+  { 92, 12, 16, 2, true },
+  { 92, 16, 16, 2, true },
+  { 20, 20, 16, 2, true },
+  { 38, 20, 16, 2, true },
+  { 56, 20, 16, 2, true },
+  { 74, 20, 16, 2, true },
+  { 92, 20, 16, 2, true },
 };
 
 Box level3[] = {
-  {29, 2, 16, 3},
-  {47, 2, 16, 3},
-  {65, 2, 16, 3},
-  {83, 2, 16, 3},
-  {29, 7, 16, 3},
-  {83, 7, 16, 3},
-  {29, 12, 16, 3},
-  {83, 12, 16, 3},
-  {29, 17, 16, 3},
-  {47, 17, 16, 3},
-  {65, 17, 16, 3},
-  {83, 17, 16, 3},
-  {47, 22, 16, 3},
-  {65, 22, 16, 3},
-  {29, 27, 16, 3},
-  {83, 27, 16, 3},
+  {2, 2, 16, 3,true},
+  {20, 2, 16, 3,true},
+  {38, 2, 16, 3,true},
+  {56, 2, 16, 3,true},
+  {74, 2, 16, 3,true},
+  {92, 2, 16, 3,true},
+  {110, 2, 16, 3,true},
+  {38, 12, 16, 3,true},
+  {56, 12, 16, 3,true},
+  {74, 12, 16, 3,true},
+  {56, 17, 16, 3,true},
+  {20, 7, 16, 3,true},
+  {38, 7, 16, 3,true},
+  {56, 7, 16, 3,true},
+  {74, 7, 16, 3,true},
+  {92, 7, 16, 3,true},
+  
 };
 
 Box level4[] = {
-  {29, 2, 16, 3},
-  {47, 2, 16, 3},
-  {65, 2, 16, 3},
-  {83, 2, 16, 3},
-  {11, 7, 16, 3},
-  {101, 7, 16, 3},
-  {11, 12, 16, 3},
-  {47, 12, 16, 3},
-  {65, 12, 16, 3},
-  {101, 12, 16, 3},
-  {11, 17, 16, 3},
-  {101, 17, 16, 3},
-  {29, 22, 16, 3},
-  {47, 22, 16, 3},
-  {65, 22, 16, 3},
-  {83, 22, 16, 3},
+  {20, 17, 16, 3,true},
+  {38, 17, 16, 3,true},
+  {74, 17, 16, 3,true},
+  {92, 17, 16, 3,true},
+  {2, 2, 16, 3,true},
+  {56, 2, 16, 3,true},
+  {110, 2, 16, 3,true},
+  {20, 7, 16, 3,true},
+  {38, 7, 16, 3,true},
+  {74, 7, 16, 3,true},
+  {92, 7, 16, 3,true},
+  {2, 12, 16, 3,true},
+  {56, 12, 16, 3,true},
+  {110, 12, 16, 3,true},
+  {2, 22, 16, 3,true},
+  {110, 22, 16, 3,true},
 };
 
 Box level5[] = {
-  {2, 2, 16, 3},
-  {56, 2, 16, 3},
-  {110, 2, 16, 3},
-  {20, 7, 16, 3},
-  {38, 7, 16, 3},
-  {74, 7, 16, 3},
-  {92, 7, 16, 3},
-  {2, 12, 16, 3},
-  {56, 12, 16, 3},
-  {110, 12, 16, 3},
-  {20, 17, 16, 3},
-  {38, 17, 16, 3},
-  {74, 17, 16, 3},
-  {92, 17, 16, 3},
-  {2, 22, 16, 3},
-  {110, 22, 16, 3},
+  {29, 2, 16, 3,true},
+  {47, 2, 16, 3,true},
+  {65, 2, 16, 3,true},
+  {83, 2, 16, 3,true},
+  {11, 7, 16, 3,true},
+  {101, 7, 16, 3,true},
+  {29, 22, 16, 3,true},
+  {47, 22, 16, 3,true},
+  {65, 22, 16, 3,true},
+  {83, 22, 16, 3,true},
+  {11, 12, 16, 3,true},
+  {47, 12, 16, 3,true},
+  {65, 12, 16, 3,true},
+  {101, 12, 16, 3,true},
+  {11, 17, 16, 3,true},
+  {101, 17, 16, 3,true},
 };
 
+
+// 7 seg için gerekli kodlar
 void zero() {
   digitalWrite(2,HIGH);
   digitalWrite(3,HIGH);
@@ -137,6 +164,7 @@ void zero() {
   delay(1000);
 }
 
+// segmentte 1
 void one(){
   digitalWrite(2,LOW);
   digitalWrite(3,HIGH);
@@ -148,6 +176,7 @@ void one(){
   delay(1000);
 }
 
+// segmentte 2
 void two() {
   digitalWrite(2,HIGH);
   digitalWrite(3,HIGH);
@@ -159,6 +188,7 @@ void two() {
   delay(1000);
 }
 
+// segmentte 3
  void three() {
   digitalWrite(2,HIGH);
   digitalWrite(3,HIGH);
@@ -171,6 +201,7 @@ void two() {
   
  }
 
+// segmentte 4
 void four() {
   digitalWrite(2,LOW);
   digitalWrite(3,HIGH);
@@ -182,6 +213,7 @@ void four() {
   delay(1000);
 }
 
+// segmentte 5
 void five() {
   digitalWrite(2,HIGH);
   digitalWrite(3,LOW);
@@ -193,6 +225,7 @@ void five() {
   delay(1000);
 }
 
+// segmentte 6
 void six() {
   digitalWrite(2,HIGH);
   digitalWrite(3,LOW);
@@ -204,6 +237,7 @@ void six() {
   delay(1000);
 }
 
+// segmentte 7
 void seven() {
   digitalWrite(2,HIGH);
   digitalWrite(3,HIGH);
@@ -215,6 +249,7 @@ void seven() {
   delay(1000);
 }
 
+// segmentte 8
 void eight() {
   digitalWrite(2,HIGH);
   digitalWrite(3,HIGH);
@@ -226,6 +261,7 @@ void eight() {
   delay(1000);
 }
 
+// segmentte 9
 void nine() {
   digitalWrite(2,HIGH);
   digitalWrite(3,HIGH);
@@ -237,105 +273,112 @@ void nine() {
   delay(1000);
 }
 
-
+// hangi bölümün aktif olduğuna göre o bölümü ekrana çizme
 void drawLevel(Box level[]) {
-  u8g2.clearBuffer();
   for (int i = 0; i < SIZE; i++) {
-    u8g2.drawBox(level[i].x, level[i].y, level[i].width, level[i].height);
-  }
-  u8g2.sendBuffer();
-}
-
-// ledi açar
-void ledAc(int led){
-  digitalWrite(led, HIGH);
-}
-
-// ledi kapar
-void ledKapat(int led){
-  digitalWrite(led, LOW);
-}
-
-// program ilk çalıştığında ekrana top çizer
-void drawBall() {
-  u8g2.clearBuffer(); // Önceki çizimleri temizle
-  u8g2.drawBox(ballPositionX, ballPositionY, ballSize, ballSize); // Topu çiz
-  u8g2.sendBuffer(); // Çizimi ekrana gönder
-}
-
-
-void updateBall(Box level[]) {
-  u8g2.clearBuffer();
-  u8g2.drawBox(ballPositionX, ballPositionY, ballSize, ballSize); // Topu çiz
-  u8g2.sendBuffer();
-
-  ballPositionX += ballSpeedX; // Topun x konumunu güncelle
-  ballPositionY += ballSpeedY; // Topun y konumunu güncelle
-
-  // Topun ekran sınırlarına çarpmasını kontrol et
-  if (ballPositionX <= 0 || ballPositionX >= 127) {
-    ballSpeedX = -ballSpeedX; // X yönlü hızı tersine çevir
-  }
-
-  // top ekranın üstüne geldiğinde yönü tersine çevir fakat altına geldiğinde tersine çevirme
-  if(ballPositionY <= 0){
-        ballSpeedY = -ballSpeedY; // Y yönlü hızı tersine çevir
-  }
-
-  // can sayısına göre topu kaçırma işlemleri
-  if(ballPositionY >= 63){
-    livesNumber = livesNumber - 1;
-    if(livesNumber == 2){
-      digitalWrite(led3, LOW);
-    ballPositionX = 64; // Topu başlangıç pozisyonuna geri döndür
-    ballPositionY = 48; // Topu başlangıç pozisyonuna geri döndür
-    ballSpeedY = -ballSpeedY; // Yönü tersine çevir
-    }else if(livesNumber == 1){
-      digitalWrite(led2, LOW);
-    ballPositionX = 64; // Topu başlangıç pozisyonuna geri döndür
-    ballPositionY = 48; // Topu başlangıç pozisyonuna geri döndür
-    ballSpeedY = -ballSpeedY; // Yönü tersine çevir
-    }else if(livesNumber == 0){
-      digitalWrite(led1, LOW);
-    ballPositionX = 200;
-    ballPositionY = 200;
+    if (level[i].active) {
+      u8g2.drawBox(level[i].x, level[i].y, level[i].width, level[i].height);
     }
   }
+}
 
-  // Topun paddle'a çarpmasını kontrol et
+
+
+// topu çizme
+void drawBall() {
+  u8g2.drawBox(ballPositionX, ballPositionY, ballSize, ballSize); // Topu çiz
+}
+
+
+
+// topu güncelleme
+void updateBall(Box level[]) {
+  //topun x ve y ekseninde hareket etmesini sağlayan yer
+  ballPositionX += ballSpeedX;
+  ballPositionY += ballSpeedY;
+
+ //topun ekranın x sınırlarını kontrol et
+  if (ballPositionX <= 0 || ballPositionX >= 127) {
+    ballSpeedX = -ballSpeedX; 
+  }
+//top ekranın üstüne çarparsa yönü ters çevir
+  if (ballPositionY <= 0) {
+    ballSpeedY = -ballSpeedY; 
+  }
+//topun paddle'a çarpma kontrolü
   if (ballPositionY + ballSize >= paddleY && ballPositionX >= paddleX && ballPositionX <= paddleX + paddleWidth) {
-    ballSpeedY = -ballSpeedY; // Y yönlü hızı tersine çevir
+    ballSpeedY = -ballSpeedY; 
   }
 
-  // Topun bloğa çarpması kontrolü
+  bool allBlocksDestroyed = true; //tüm blokların olup olmadığı kontrol et
   for (int i = 0; i < SIZE; i++) {
-    if (ballPositionX + ballSize >= level[i].x && ballPositionX <= level[i].x + level[i].width &&
+    //topun bloğa çarpma kontrolü
+    if (level[i].active &&
+        ballPositionX + ballSize >= level[i].x && ballPositionX <= level[i].x + level[i].width &&
         ballPositionY + ballSize >= level[i].y && ballPositionY <= level[i].y + level[i].height) {
-      // Top bloğa çarptığı anda bloğu ekrandan dışarı al ve topu ters çevir
-      level[i].x = -100; // Bloğun x koordinatını ekrandan dışına al
-      level[i].y = -100; // Bloğun y koordinatını ekrandan dışına al
-      ballSpeedY = -ballSpeedY; // Yönü tersine çevir
-      if(total < 10){
-          displayNumber(total);
+      level[i].active = false; //ekrandan bloğu sil
+      createItem(level[i].x, level[i].y); //item oluştur
+      ballSpeedY = -ballSpeedY; 
+//7segmentte gösterilecek blok sayısı için
+      if (segmentTotal < 10) {
+       displayNumber(segmentTotal);
       }else{
-        total = 1;
+        segmentTotal = 1;
         one();
       }
-      total = total + 1;
-      // terminale genel toplamı yazar ve günceller
-      generalTotal = generalTotal + 1;
-      if(generalTotal == 6){ 
-      // bir dahaki levele geçmeden önce 5 saniye bekle
-      delay(5000);
-      // level 2 ye geçmek için
-      activeLevel = activeLevel + 1;
-      ballPositionX = 64; // Topu başlangıç pozisyonuna geri döndür
-      ballPositionY = 48; // Topu başlangıç pozisyonuna geri döndür
-      ballSpeedY = -ballSpeedY; // Yönü tersine çevir
+      segmentTotal++;
+       total = total + 1;
+      levelTotal++; 
+      //bir bölümde kırılan toplam blok sayısı 17
+      if (levelTotal == 17) {
+        levelTotal = 0; 
+        zero(); // 7 segmenti sıfırla
+        delay(3000); 
+        activeLevel++; // sonraki bölüme geç
+        ballPositionX = 64; // topu başlangıç yerine getir
+        ballPositionY = 48;
+        ballSpeedY = -ballSpeedY;
       }
+    }
+    //ekranda blok var mı yok mu kontrolü
+    if (level[i].active) {
+      allBlocksDestroyed = false;
+    }
+  }
+
+//bölüm bitti mi bitmedi mi kontrolü biterse sonraki bölüme geçiriyor
+  if (allBlocksDestroyed && levelTotal != 0) {
+    activeLevel++; 
+    ballPositionX = 64;
+    ballPositionY = 48;
+    ballSpeedY = -ballSpeedY; 
+    
+    //seviye değişince topun hızı %20 artırdığımız yer
+    ballSpeedX =ballSpeedX*0.2+ballSpeedX;
+    ballSpeedY = ballSpeedY*0.2+ballSpeedY;
+}
+
+//topun ekranın altına düştüğünde çalışacak yer
+  if (ballPositionY >= 63 ) {
+    livesNumber--; 
+    if (livesNumber == 2) {
+      digitalWrite(led3, LOW);//ledi kapatır
+      ballPositionX = 64; 
+    ballPositionY = 48; 
+    ballSpeedY = -ballSpeedY; 
+    } else if (livesNumber == 1) {
+      digitalWrite(led2, LOW); 
+      ballPositionX = 64; 
+    ballPositionY = 48; 
+    ballSpeedY = -ballSpeedY; 
+    } else if (livesNumber == 0) {
+      digitalWrite(led1, LOW); 
+      ballPositionX = 200; // topu ekrandan siler
+      ballPositionY = 200;
     }
   }
 }
+
 
 // 7 segment displayde ekrana sayı yazdırma
 void displayNumber(int num) {
@@ -368,26 +411,91 @@ void displayNumber(int num) {
       nine();
       break;
     default:
-      // Eğer num 0-9 arasında değilse herhangi bir işlem yapma
       break;
   }
 }
 
-// pedal çizer sonra loop ile tekrarlanır bu method sürekli
+
+// peddle çizer sonra loop ile tekrarlanır bu method sürekli
 void drawPaddle(){
-  int potansiyometreDegeri = analogRead(A0); // Potansiyometrenin değerini oku (0-1023 arası)
-  int ekranGenislik = 128 - paddleWidth; // Ekran genişliğini hesapla
-  int newPaddleX = map(potansiyometreDegeri, 0, 1023, 0, ekranGenislik); // Potansiyometre değerini ekran genişliğine dönüştür
-  u8g2.clearBuffer();
-  u8g2.drawBox(newPaddleX, paddleY, paddleWidth, paddleHeight); // Yeni konumda kutuyu çiz
-  u8g2.sendBuffer();
-  paddleX = newPaddleX; // Kutunun yeni konumunu sakla
+  u8g2.drawBox(paddleX, paddleY, paddleWidth, paddleHeight);
 }
+
+
+// can veren item'ı çizme
+void drawItem() {
+  if (item.active) {
+    u8g2.drawBox(item.x, item.y, item.size, item.size);
+  }
+}
+
+void createItem(byte x, byte y) {
+  if (random(0, 10) == 0) { //blok kırılınca yüzde 10 ihtimalle çıkma kısmı
+    item.active = true;
+    //çıkan itemın koordinatları
+    item.x = x; 
+    item.y = y; 
+    item.size = 3; 
+    item.speed = 1; 
+  }
+}
+
+void updateItem() {
+  if (item.active) {
+    item.y += item.speed;//itemı sadece y ekseninde hareket ettir
+    // itemın paddle ile çarpışma kontrolü
+    if (item.y + item.size >= paddleY && item.x >= paddleX && item.x <= paddleX + paddleWidth) {
+      item.active = false; // itemı sil
+      livesNumber++; // oyuncuya can ver
+      updateLivesLED(); 
+    }
+    // item ekrandan dışarı çıkarsa
+    if (item.y > 64) {
+      item.active = false; 
+    }
+  }
+}
+
+
+// item alınmasına göre led düzenleme
+void updateLivesLED() {
+  if(livesNumber >= 1)
+  digitalWrite(led1,HIGH);
+  else
+  digitalWrite(led1,LOW);
+  if(livesNumber>=2)
+  digitalWrite(led2,HIGH);
+  else
+  digitalWrite(led2,LOW);
+  if(livesNumber>=3)
+  digitalWrite(led3,HIGH);
+  else
+  digitalWrite(led3,LOW);
+}
+
+// menüyü çizme
+void drawMenu() {
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB14_tr);
+  u8g2.setCursor(10, 20);
+  u8g2.print("Start");
+  u8g2.setCursor(10, 40);
+  u8g2.print("Exit");
+
+  u8g2.setCursor(0, menuOption == 0 ? 20 : 40);
+  u8g2.print(">");
+  u8g2.sendBuffer();
+
+}
+
 
 // program ilk çalışmaya başladığında bu çalışır
 void setup() {
   u8g2.begin();
   Serial.begin(9600);
+  delay(500);
+ //pin girişleri
+  pinMode(A0,INPUT);
   pinMode(2,OUTPUT);
   pinMode(3,OUTPUT);
   pinMode(4,OUTPUT);
@@ -398,34 +506,164 @@ void setup() {
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
   pinMode(led3, OUTPUT);
+ 
+  // butonlar için
+  pinMode(buttonUp, INPUT_PULLUP);
+  pinMode(buttonDown, INPUT_PULLUP);
+  pinMode(buttonSelect, INPUT_PULLUP);
 
-  // 3 LED'i başlangıçta aç
+  //tüm ledler başta açık
   digitalWrite(led1, HIGH);
   digitalWrite(led2, HIGH);
   digitalWrite(led3, HIGH);
 
-  // oyunun başlangıcında 7 segmenti 0'dan başlatır !!
-  zero();  
+  // başta 7 seg 0
+  zero();
+  //oyunun başında paddle çizer
+      drawPaddle();
 }
 
-// program başladığında setup() methodundan sonra çalışmaya başlar ve sürekli çalışır
-void loop() {
+void move(){
+//potansiyometreden gelen değere göre her defasında paddleın konumunu düzenler
+  int newPaddleX = map(analogRead(A0), 0, 1023, 0, 128);
+  paddleX = newPaddleX; // Paletin X konumunu güncelle
+ 
+}
+
+void displayMessage(const char* message,byte size) {
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_6x12_tr);
+  u8g2.setCursor(0, 10+size);
+  u8g2.print(message);
+  u8g2.sendBuffer();
+}
+
+void showTotal(){
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_6x12_tr);
+  u8g2.setCursor(0, 30);
+  u8g2.print(total-1);
+  u8g2.sendBuffer();
+  delay(3000);
+}
+
+void startGame(){
+while(0 <livesNumber){
+
+if(activeLevel == 1){
+  u8g2.clearBuffer();//ekranı sil
+  move();
   drawPaddle();
-  if(activeLevel == 1){
-      drawLevel(level1);
-      updateBall(level1);
+  drawBall();
+  drawLevel(level1);
+  updateBall(level1);
+  updateItem(); 
+  drawItem(); 
+  u8g2.sendBuffer();//ekrana gönderme
   }else if(activeLevel == 2){
-      drawLevel(level4);
-      updateBall(level4);
+  u8g2.clearBuffer();
+  move();
+  drawPaddle();
+  drawBall();
+  drawLevel(level2);
+  updateBall(level2);
+  updateItem(); 
+  drawItem(); 
+  u8g2.sendBuffer(); 
   }else if(activeLevel == 3){
-      updateBall(level5);
-      drawLevel(level5);
+  u8g2.clearBuffer();
+  move();
+  drawPaddle();
+  drawBall();
+  updateBall(level3);
+  updateItem(); 
+  drawItem(); 
+  drawLevel(level3);
+  u8g2.sendBuffer(); 
   }else if(activeLevel == 4){
-      updateBall(level4);
-      drawLevel(level4);
+  u8g2.clearBuffer();
+  move();
+  drawPaddle();
+  drawBall();
+  updateBall(level4);
+  updateItem(); 
+  drawItem(); 
+  drawLevel(level4);
+  u8g2.sendBuffer(); 
   }else if(activeLevel == 5){
-      updateBall(level5);
-      drawLevel(level5);
+  u8g2.clearBuffer();
+  move();
+  drawPaddle();
+  drawBall();
+  updateBall(level5);
+  updateItem(); 
+  drawItem(); 
+  drawLevel(level5);
+  u8g2.sendBuffer(); 
   }
-  delay(20); // Topun hareket hızını ayarlar
+
+  if (livesNumber == 0) {
+     displayMessage("Game Over", 30);
+     delay(2000);
+     showTotal();
+
+     digitalWrite(led1, HIGH);
+     digitalWrite(led2, HIGH);
+     digitalWrite(led3, HIGH);
+
+     total = 1;
+     levelTotal = 1;
+     livesNumber = 3;
+     segmentTotal= 1;
+     activeLevel = 1;
+
+
+  // oyun en başa döndüğünde yapılacak işlemler
+  zero();
+
+  for(int i= 0;i<SIZE;i++){
+    level1[i].active = true;
+    level2[i].active = true;
+    level3[i].active = true;
+    level4[i].active = true;
+    level5[i].active = true;
+  }
+
+   ballPositionX = 64;
+   ballPositionY = 48;
+   ballSpeedY = -ballSpeedY; 
+
+   break;
+  }
+  }
+}
+
+
+void loop() {
+  drawMenu();
+
+  if (digitalRead(buttonUp) == LOW) {
+    
+    menuOption = (menuOption == 0) ? 1 : 0;
+    delay(200); 
+  }
+
+  if (digitalRead(buttonDown) == LOW) {
+   
+    menuOption = (menuOption == 0) ? 1 : 0;
+    delay(200); 
+  }
+
+  if (digitalRead(buttonSelect) == LOW) {
+    if (menuOption == 0) {
+      startGame();
+    } else {
+      displayMessage("Thank you for your",5);
+      delay(2000);
+      displayMessage("interest in our game",30);
+      delay(2000);
+      displayMessage("BB",40);
+      while (true); 
+    }
+  }
 }
