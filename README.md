@@ -18,3 +18,7 @@
 ![Ekran görüntüsü 2024-04-23 134717](https://github.com/MustafaEfeTamer/Brick-Break-Game/assets/119308432/bb32f9f5-f1f0-4196-8d29-bab8435c2fb2)
 ![Ekran görüntüsü 2024-04-23 134727](https://github.com/MustafaEfeTamer/Brick-Break-Game/assets/119308432/2b734c69-f605-4ffa-aa2d-4f531766ade5)
 
+
+##### UML
+![Ekran görüntüsü 2024-04-22 020727](https://github.com/MustafaEfeTamer/Brick-Break-Game/assets/119308432/c1851667-4f1f-4100-b057-02e484947ca9)
+
